@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#11120f" />
+    <meta name="description" content="Eight candles. One forbidden journal. A deal with Bill Cipher. A cinematic, interactive random number ritual." />
+    <meta property="og:title" content="The Cipher Ritual — Leave it to chaos." />
+    <meta property="og:description" content="Some numbers come at a price. An interactive encounter with chance." />
+    <title>The Cipher Ritual — Leave it to chaos.</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="./fonts/cormorant-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <div id="app" data-stage="loading">
+      <canvas id="world" aria-label="A candlelit dungeon with a mysterious journal" role="img"></canvas>
+      <div class="vignette" aria-hidden="true"></div>
+      <div class="grain" aria-hidden="true"></div>
+      <div id="darkness" aria-hidden="true"></div>
+      <header class="site-header">
+        <a class="wordmark" href="./" aria-label="The Cipher Ritual, start over">
+          <svg viewBox="0 0 42 42" aria-hidden="true"><path d="M21 4 39 36H3Z"/><path d="M10 23Q21 10 32 23Q21 36 10 23Z"/><path d="M21 17v12M21 0v3M0 39h42"/></svg>
+          <span>THE CIPHER <b>RITUAL</b></span>
+        </a>
+        <span class="header-note">AN ENCOUNTER WITH CHANCE</span>
+        <div class="header-actions">
+          <button id="motion-toggle" class="icon-button" aria-label="Reduce animation" aria-pressed="false" title="Reduce animation">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 4 8 8-8 8M4 4l8 8-8 8"/></svg>
+          </button>
+          <button id="sound-toggle" class="sound-button" aria-label="Enable sound" aria-pressed="false">
+            <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="sound-label">SOUND OFF</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section id="intro" class="intro screen-copy" aria-labelledby="intro-title">
+          <div class="eyebrow"><span></span> THE SUMMONING <span></span></div>
+          <h1 id="intro-title">Leave it<br />to <em>chaos.</em></h1>
+          <p>Some numbers come at a price.<br />Light the candles. See what answers.</p>
+          <div class="intro-coordinate" aria-hidden="true">45° 21′ N &nbsp; / &nbsp; REALITY: UNSTABLE</div>
+        </section>
+
+        <div id="candle-targets" aria-label="Eight ritual candles"></div>
+        <button id="lighter-target" class="object-target lighter-target" aria-label="Pick up the lighter">
+          <span class="target-dot"></span><span class="object-label">PICK UP THE LIGHTER <span>↗</span></span>
+        </button>
+        <button id="book-target" class="object-target book-target" aria-label="Touch the open journal to summon Bill Cipher" hidden></button>
+
+        <section id="ritual-guide" class="ritual-guide" aria-label="Ritual progress">
+          <div class="guide-symbol" aria-hidden="true">✦</div>
+          <div class="guide-copy"><h2 id="guide-title">A little fire. A very bad idea.</h2><p id="guide-detail">Pick up the lighter. Pass its flame over all eight candles.</p></div>
+          <div class="candle-progress"><div id="progress-marks" aria-hidden="true"></div><span><b id="candle-count">0</b> <i>/</i> 8</span></div>
+        </section>
+
+        <section id="journal-copy" class="journal-copy screen-copy" hidden aria-labelledby="journal-title">
+          <span class="eyebrow">JOURNAL 4 &nbsp; · &nbsp; ENTRY 0618</span>
+          <h2 id="journal-title">He has been <em>expecting you.</em></h2>
+          <p>Some pages are better left unturned.</p>
+          <button id="summon-button" class="text-button">TOUCH THE JOURNAL <span>↗</span></button>
+        </section>
+
+        <section id="offer" class="offer screen-copy" hidden aria-labelledby="offer-title">
+          <span class="eyebrow">A PERFECTLY REASONABLE DEMON</span>
+          <h2 id="offer-title">“Let’s shake<br /><em>on it.</em>”</h2>
+          <p>One little handshake.<br />One number the universe owes you.</p>
+          <div class="choices">
+            <button id="accept" class="primary-button"><span>MAKE A DEAL</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+            <button id="decline" class="text-button">I’LL DECIDE MYSELF <span>↗</span></button>
+          </div>
+          <span class="offer-fineprint">NO TAKE-BACKS. PROBABLY.</span>
+        </section>
+
+        <div id="cinematic-caption" class="cinematic-caption" role="status" aria-live="polite"></div>
+
+        <section id="result" class="result screen-copy" hidden aria-labelledby="result-title">
+          <div class="result-sigil" aria-hidden="true"><svg viewBox="0 0 90 80"><path d="M45 7 84 73H6Z"/><path d="M24 45Q45 23 66 45Q45 67 24 45Z"/><path d="M45 34v22"/></svg></div>
+          <span class="eyebrow">THE UNIVERSE HAS SPOKEN</span>
+          <h2 id="result-title" class="sr-only">Your random number</h2>
+          <output id="number" class="result-number" aria-live="polite">—</output>
+          <p id="result-remark">A small number. An enormous consequence.</p>
+          <div class="result-range"><span>0</span><div><i id="range-marker"></i></div><span>100</span></div>
+          <button id="again" class="primary-button"><span>TEMPT FATE AGAIN</span><span aria-hidden="true">↻</span></button>
+          <button id="restart" class="text-button">RETURN TO THE CHAMBER <span>↗</span></button>
+          <span id="copied" class="copy-status" role="status"></span>
+          <button id="copy-number" class="copy-button" aria-label="Copy your number">COPY NUMBER <span>⧉</span></button>
+        </section>
+
+        <section id="loading" class="loading-screen" aria-label="Loading the chamber"><div class="loading-eye" aria-hidden="true">◈</div><p>REALITY IS TAKING SHAPE</p><span id="loading-note">Preparing the chamber…</span></section>
+        <section id="fallback" class="fallback" hidden aria-labelledby="fallback-title"><span class="eyebrow">A GLITCH IN REALITY</span><h2 id="fallback-title">The chamber could<br />not take shape.</h2><p>Your browser could not start the 3D scene. Try a browser with WebGL enabled, or let fate choose a number here.</p><button id="fallback-random" class="primary-button">LET FATE DECIDE <span>↗</span></button><output id="fallback-number" aria-live="polite"></output></section>
+      </main>
+
+      <footer class="site-footer"><div class="chapter"><span id="chapter-number">01</span><i></i><span id="chapter-title">THE SUMMONING</span></div><span class="footer-center">REALITY IS AN ILLUSION.</span><div class="footer-range"><span>0 — 100</span><small>ONE NUMBER. ONE DEAL.</small></div></footer>
+      <div id="held-lighter" class="held-lighter" hidden aria-hidden="true"><span class="cursor-flame"></span><svg viewBox="0 0 50 84"><defs><linearGradient id="brass" x2="1" y2="0"><stop stop-color="#695139"/><stop offset=".4" stop-color="#d3b580"/><stop offset="1" stop-color="#806241"/></linearGradient></defs><rect x="9" y="30" width="30" height="47" rx="5" fill="url(#brass)" stroke="#e0c595"/><path d="M9 42h30M14 48v20M18 48v20" stroke="#654c32"/><rect x="10" y="17" width="14" height="17" rx="2" fill="#8e8a80"/><circle cx="30" cy="24" r="7" fill="#58564f" stroke="#d6c9ac" stroke-dasharray="2 2"/><path d="M12 14V6h24v8" fill="none" stroke="#c6ac78" stroke-width="4"/></svg></div>
+      <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+      <noscript><div class="no-script">This ritual needs JavaScript. Enable it to enter the chamber.</div></noscript>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
