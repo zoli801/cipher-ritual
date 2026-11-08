@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { illustratedPage } from './journal-art.js';
 
 export function seeded(seed = 618) {
   return () => { let t = seed += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
@@ -103,6 +104,7 @@ function sketchBill(c,x,y,scale=1) {
 }
 
 export function journalTexture(side) {
+  const illustrated=illustratedPage(7,side);if(illustrated)return illustrated;
   const [el,c]=paperBase(side==='left'?400:401);
   c.textBaseline='alphabetic';c.textAlign='left';
   if(side==='left') {
@@ -135,6 +137,7 @@ export function journalTexture(side) {
 
 /** Distinct archive leaves, seen only while the journal searches for Bill's entry. */
 export function archiveTexture(index, side='right') {
+  const illustrated=illustratedPage(index,side);if(illustrated)return illustrated;
   const subjects=[
     ['GNOMES','Small. Organized. Exceptionally bad at disguises.'],
     ['THE HIDE-BEHIND','Never seen directly. Look over your other shoulder.'],

@@ -145,7 +145,9 @@ async function start(){
   try{
     await Promise.all([document.fonts.load('500 28px Cormorant'),document.fonts.load('italic 28px Cormorant'),document.fonts.load('500 12px Manrope')]);
     $('#loading-note').textContent='Opening a door that should stay closed…';
-    const {Chamber}=await import('./scene.js');chamber=new Chamber($('#world'),fallback);chamber.setReduced(reduced);
+    const {Chamber,preloadJournalArt}=await import('./scene.js');
+    await preloadJournalArt((n,total)=>$('#loading-note').textContent=`Restoring the journal… ${n} / ${total}`);
+    chamber=new Chamber($('#world'),fallback);chamber.setReduced(reduced);
     await chamber.renderer.compileAsync(chamber.scene,chamber.camera);
     changeStage('ritual');$('#loading').classList.add('finished');setTimeout(()=>$('#loading').hidden=true,1100);
     last=performance.now();raf=requestAnimationFrame(frame);

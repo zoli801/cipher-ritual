@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { stoneTexture, floorTexture, glowTexture, coverTexture, journalTexture, archiveTexture, pageEdgesTexture, runeTexture, seeded } from './textures.js';
 import { clamp, smooth, easeOut, durations } from './ritual.js';
 import { pageStackAt, handshakeAt, transformationAt } from './animation.js';
+export { preloadJournalArt } from './journal-art.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const GOLD = 0xd3b16e;
@@ -113,7 +114,7 @@ export class Chamber {
     this.rightSurface=mesh(surface(false),this.paperRight,this.book,[0,.423,0],[-Math.PI/2,0,0]);
     this.leftSurface=mesh(surface(true),this.paperLeft,this.book,[-2.37,.093,0],[-Math.PI/2,0,0]);this.leftSurface.visible=false;
     this.hinge=new THREE.Group();this.hinge.position.set(-1.19,.47,0);this.book.add(this.hinge);
-    this.cover=mesh(new THREE.BoxGeometry(2.42,.12,3.2),[leather,leather,standard(0xffffff,{map:coverTexture(),roughness:.66}),this.paperLeft,leather,leather],this.hinge,[1.19,.02,0]);this.cover.castShadow=true;
+    this.cover=mesh(new THREE.BoxGeometry(2.42,.12,3.2),[leather,leather,standard(0xffffff,{map:coverTexture(),roughness:.66}),standard(0xb99b65,{roughness:1}),leather,leather],this.hinge,[1.19,.02,0]);this.cover.castShadow=true;
     for(const x of [.11,2.26])for(const z of [-1.43,1.43]){
       mesh(new THREE.BoxGeometry(.23,.017,.055),gold,this.hinge,[x,.09,z]);mesh(new THREE.BoxGeometry(.055,.017,.23),gold,this.hinge,[x,.09,z]);
       mesh(new THREE.SphereGeometry(.025,6,5),gold,this.hinge,[x,.105,z]);
@@ -121,9 +122,12 @@ export class Chamber {
     for(const z of [-1.15,-.8,.8,1.15])mesh(new THREE.BoxGeometry(.21,.4,.055),gold,this.book,[-1.2,.19,z]);
     const ribbon=mesh(new THREE.BoxGeometry(.13,.015,1.1),standard(0x6d2020),this.book,[.8,.08,1.5]);ribbon.rotation.y=.15;
     this.leaves=[];this.archiveRight=[];this.archiveLeft=[];
+    for(let i=0;i<8;i++){
+      this.archiveRight.push(i===7?this.paperRight:new THREE.MeshBasicMaterial({map:archiveTexture(i,'right'),toneMapped:false}));
+      this.archiveLeft.push(i===7?this.paperLeft:new THREE.MeshBasicMaterial({map:archiveTexture(i,'left'),toneMapped:false}));
+    }
     for(let i=0;i<7;i++){
-      const frontMap=archiveTexture(i,'right'),leftMap=archiveTexture(i,'left'),backMap=leftMap.clone();backMap.repeat.x=-1;backMap.offset.x=1;backMap.needsUpdate=true;
-      this.archiveRight.push(new THREE.MeshBasicMaterial({map:frontMap,toneMapped:false}));this.archiveLeft.push(new THREE.MeshBasicMaterial({map:leftMap,toneMapped:false}));
+      const frontMap=this.archiveRight[i].map,leftMap=this.archiveLeft[i+1].map,backMap=leftMap.clone();backMap.repeat.x=-leftMap.repeat.x;backMap.offset.x=leftMap.offset.x+leftMap.repeat.x;backMap.needsUpdate=true;
       const pivot=new THREE.Group();pivot.position.set(-1.12,.43,0);this.book.add(pivot);
       const geometry=new THREE.PlaneGeometry(2.2,2.98,24,8);
       const leaf=mesh(geometry,new THREE.MeshBasicMaterial({map:frontMap,side:THREE.FrontSide,toneMapped:false}),pivot,[1.1,.002,0],[-Math.PI/2,0,0]);
@@ -336,7 +340,7 @@ export class Chamber {
   setReduced(value){this.reduced=value;}
   update(stage,stageTime,dt,time){
     this.elapsed=time;const mobile=this.mobile;let position=this.homePosition.clone(),target=this.homeTarget.clone();
-    const journalPos=new THREE.Vector3(...(mobile?[0,6.4,8.9]:[.15,5.0,7.3]));
+    const journalPos=new THREE.Vector3(...(mobile?[0,9.0,6.0]:[.15,8.0,5.4]));
     const journalTarget=new THREE.Vector3(0,2.25,0);
     if(mobile){const f=Math.max(1,.68/this.camera.aspect);journalPos.sub(journalTarget).multiplyScalar(f).add(journalTarget);}
     const offerPos=new THREE.Vector3(...(mobile?[0,3.5,13.3]:[0,3.7,11.7]));
@@ -364,8 +368,9 @@ export class Chamber {
       this.rightPages.scale.y=rightThickness;this.rightPages.position.y=.08+rightThickness/2;
       this.leftPages.scale.y=Math.max(.002,leftThickness);this.leftPages.position.y=.09+leftThickness/2;
       this.leftSurface.position.y=.093+leftThickness;this.rightSurface.position.y=.083+rightThickness;
-      this.leftSurface.material=finished>=6?this.paperLeft:this.archiveLeft[Math.max(0,finished)];
-      this.rightSurface.material=finished>=6?this.paperRight:this.archiveRight[Math.min(6,Math.max(0,finished+1))];
+      const leftEntry=Math.min(7,Math.max(0,finished+1)),underEntry=Math.min(7,stack.progress.findLastIndex(p=>p>0)+1);
+      this.leftSurface.material=this.archiveLeft[leftEntry];
+      this.rightSurface.material=this.archiveRight[underEntry];
     }
     if(stage==='summoning'){
       const p=smooth(stageTime/3.0);position.copy(journalPos).lerp(offerPos,p);target.copy(journalTarget).lerp(offerTarget,p);
